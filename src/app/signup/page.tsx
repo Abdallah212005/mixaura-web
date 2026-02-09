@@ -43,7 +43,11 @@ export default function SignupPage() {
 
   useEffect(() => {
     if (user) {
-      router.push("/");
+      if (user.email?.toLowerCase() === 'admin@mixaura.com') {
+          router.push("/admin-setup");
+      } else {
+          router.push("/");
+      }
     }
   }, [user, router]);
 
@@ -63,7 +67,13 @@ export default function SignupPage() {
         title: "Account Created",
         description: "Welcome to Mix Aura!",
       });
-      router.push("/");
+      
+      if (data.email.toLowerCase() === 'admin@mixaura.com') {
+        router.push("/admin-setup");
+      } else {
+        router.push("/");
+      }
+
     } catch (error: any) {
       let description = "An unexpected error occurred. Please try again.";
       if (error.code === 'auth/email-already-in-use') {
@@ -71,6 +81,7 @@ export default function SignupPage() {
       } else if (error.code === 'auth/weak-password') {
         description = "The password is too weak. Please use a stronger password.";
       } else {
+        console.error("Signup error:", error);
         description = error.message || description;
       }
       toast({

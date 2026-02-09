@@ -45,9 +45,6 @@ export default function LoginPage() {
     if (user && isAdmin !== null) { // isAdmin is null while loading
       if (isAdmin) {
         router.push("/admin");
-      } else if (user.email?.toLowerCase() === 'admin@mixaura.com') {
-        // This is the special case for the admin user who hasn't completed setup
-        router.push("/admin-setup");
       } else {
         router.push("/");
       }

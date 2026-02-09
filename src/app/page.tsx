@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { collection } from "firebase/firestore";
 import { useCollection, useFirestore, useMemoFirebase } from "@/firebase";
-import { AnimatedBackground } from "@/components/animated-background";
 import { Header } from "@/components/header";
 import { Hero } from "@/components/hero";
 import { PortfolioDisplay, type PortfolioItem } from "@/components/portfolio-display";
@@ -28,7 +27,6 @@ export default function Home() {
 
   return (
     <>
-      <AnimatedBackground />
       <div className="relative flex flex-col min-h-screen">
         <Header />
         <main className="flex-1 container mx-auto px-4 py-24 sm:py-32">

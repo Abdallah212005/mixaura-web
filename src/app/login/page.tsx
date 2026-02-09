@@ -13,7 +13,6 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { toast } from "@/hooks/use-toast";
-import { AnimatedBackground } from "@/components/animated-background";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 
@@ -68,7 +67,6 @@ export default function LoginPage() {
 
   return (
     <>
-      <AnimatedBackground />
       <div className="relative flex flex-col min-h-screen">
         <Header />
         <main className="flex-1 container mx-auto px-4 py-24 sm:py-32 flex items-center justify-center">

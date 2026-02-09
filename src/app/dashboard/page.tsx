@@ -33,7 +33,7 @@ export default function DashboardPage() {
 
   // Render a minimal loading state while checks are in progress
   return (
-    <div className="flex flex-col min-h-screen items-center justify-center bg-background p-4">
+    <div className="flex flex-col min-h-screen items-center justify-center p-4">
         <div className="w-full max-w-sm space-y-4 text-center">
             <h1 className="text-2xl font-bold">Please wait</h1>
             <p className="text-muted-foreground">Verifying credentials and redirecting...</p>

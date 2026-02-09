@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { FirebaseClientProvider } from "@/firebase/client-provider";
+import { AnimatedBackground } from "@/components/animated-background";
 
 export const metadata: Metadata = {
   title: "Mix Aura Digital",
@@ -22,7 +23,10 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased">
         <FirebaseClientProvider>
-          {children}
+          <AnimatedBackground />
+          <div className="relative">
+            {children}
+          </div>
         </FirebaseClientProvider>
         <Toaster />
       </body>

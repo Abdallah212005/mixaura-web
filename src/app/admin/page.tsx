@@ -27,7 +27,6 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from "@/hooks/use-toast";
-import { AnimatedBackground } from "@/components/animated-background";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -276,7 +275,6 @@ export default function AdminPage() {
   // If we reach this point, `isAdmin` must be `true`.
   return (
     <>
-      <AnimatedBackground />
       <div className="relative flex flex-col min-h-screen">
         <Header />
         <main className="flex-1 container mx-auto px-4 py-24 sm:py-32">

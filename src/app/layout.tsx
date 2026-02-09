@@ -6,7 +6,7 @@ import { AnimatedBackground } from "@/components/animated-background";
 
 export const metadata: Metadata = {
   title: "Mix Aura",
-  description: "Start like a pro. We're a marketing agency and a team of developers.",
+  description: "A marketing agency and development team dedicated to building brands that make an impact.",
 };
 
 export default function RootLayout({

@@ -50,20 +50,12 @@ export default function SignupPage() {
         email: newUser.email,
       });
 
-      if (newUser.email === 'admin@mixaura.com') {
-        await setDoc(doc(firestore, "roles_admin", newUser.uid), {});
-        toast({
-          title: "Admin Account Created",
-          description: "Welcome! Redirecting to the admin panel...",
-        });
-      } else {
-        toast({
-          title: "Account Created",
-          description: "Welcome to Mix Aura!",
-        });
-      }
+      toast({
+        title: "Account Created",
+        description: "Welcome! You can now log in.",
+      });
       
-      router.push('/dashboard');
+      router.push('/login');
       
     } catch (error: any) {
       let description = "An unexpected error occurred. Please try again.";

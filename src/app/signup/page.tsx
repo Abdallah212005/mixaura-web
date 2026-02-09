@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -8,8 +8,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
-import { useAuth, useFirestore, useUser } from "@/firebase";
-import { useAdmin } from "@/hooks/useAdmin";
+import { useAuth, useFirestore } from "@/firebase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -29,8 +28,6 @@ type SignupFormValues = z.infer<typeof signupSchema>;
 export default function SignupPage() {
   const auth = useAuth();
   const firestore = useFirestore();
-  const { user } = useUser();
-  const isAdmin = useAdmin();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -41,16 +38,6 @@ export default function SignupPage() {
       password: "",
     },
   });
-
-  useEffect(() => {
-    if (user && isAdmin !== null) { // isAdmin is null while loading
-      if (isAdmin) {
-        router.push("/admin");
-      } else {
-        router.push("/");
-      }
-    }
-  }, [user, isAdmin, router]);
 
   const onSubmit = async (data: SignupFormValues) => {
     setIsLoading(true);
@@ -64,22 +51,22 @@ export default function SignupPage() {
         email: newUser.email,
       });
 
-      // Automatically make the specific user an admin upon signup.
+      // Automatically make the specific user an admin upon signup and redirect.
       if (newUser.email === 'admin@mixaura.com') {
         await setDoc(doc(firestore, "roles_admin", newUser.uid), {});
         toast({
           title: "Admin Account Created",
-          description: "Welcome! You have been automatically set as the admin.",
+          description: "Redirecting to the admin panel...",
         });
+        router.push('/admin');
       } else {
         toast({
           title: "Account Created",
           description: "Welcome to Mix Aura!",
         });
+        router.push('/');
       }
       
-      // Redirection is handled by useEffect
-
     } catch (error: any) {
       let description = "An unexpected error occurred. Please try again.";
       if (error.code === 'auth/email-already-in-use') {

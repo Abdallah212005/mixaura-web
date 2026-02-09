@@ -1,14 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { useAuth, useUser } from "@/firebase";
-import { useAdmin } from "@/hooks/useAdmin";
+import { doc, getDoc } from "firebase/firestore";
+import { useAuth, useFirestore } from "@/firebase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -27,8 +27,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const auth = useAuth();
-  const { user } = useUser();
-  const isAdmin = useAdmin();
+  const firestore = useFirestore();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -40,25 +39,26 @@ export default function LoginPage() {
     },
   });
 
-  useEffect(() => {
-    if (user && isAdmin !== null) { // isAdmin is null while loading
-      if (isAdmin) {
-        router.push("/admin");
-      } else {
-        router.push("/");
-      }
-    }
-  }, [user, isAdmin, router]);
-
   const onSubmit = async (data: LoginFormValues) => {
     setIsLoading(true);
     try {
-      await signInWithEmailAndPassword(auth, data.email, data.password);
+      const userCredential = await signInWithEmailAndPassword(auth, data.email, data.password);
+      const user = userCredential.user;
+
+      // Check for admin role immediately after login
+      const adminDocRef = doc(firestore, 'roles_admin', user.uid);
+      const adminDoc = await getDoc(adminDocRef);
+
       toast({
         title: "Login Successful",
         description: "Welcome back!",
       });
-      // Redirection is handled by useEffect
+
+      if (adminDoc.exists()) {
+        router.push("/admin");
+      } else {
+        router.push("/");
+      }
     } catch (error: any) {
       let description = "An unexpected error occurred. Please try again.";
       if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {

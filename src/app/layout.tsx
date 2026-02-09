@@ -5,8 +5,8 @@ import { FirebaseClientProvider } from "@/firebase/client-provider";
 import { AnimatedBackground } from "@/components/animated-background";
 
 export const metadata: Metadata = {
-  title: "Mix Aura Digital",
-  description: "We blend creative strategy with AI-powered insights to launch startups into the stratosphere.",
+  title: "Mix Aura",
+  description: "Start like a pro. We're a marketing agency and a team of developers.",
 };
 
 export default function RootLayout({

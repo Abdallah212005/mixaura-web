@@ -46,7 +46,7 @@ export default function Home() {
              <div className="mt-16 md:mt-24 animate-fade-in">
                <Separator className="my-8 bg-border/20" />
                <h2 className="text-3xl font-bold tracking-tighter text-center mb-12 bg-clip-text text-transparent bg-gradient-to-r from-white to-white/70">
-                Our AI-Powered Work
+                Our Portfolio
                </h2>
                {isLoading && (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

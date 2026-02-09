@@ -12,7 +12,6 @@ import { useAuth, useFirestore, useUser } from "@/firebase";
 import { useAdmin } from "@/hooks/useAdmin";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { toast } from "@/hooks/use-toast";
@@ -65,10 +64,19 @@ export default function SignupPage() {
         email: newUser.email,
       });
 
-      toast({
-        title: "Account Created",
-        description: "Welcome to Mix Aura!",
-      });
+      // Automatically make the specific user an admin upon signup.
+      if (newUser.email === 'admin@mixaura.com') {
+        await setDoc(doc(firestore, "roles_admin", newUser.uid), {});
+        toast({
+          title: "Admin Account Created",
+          description: "Welcome! You have been automatically set as the admin.",
+        });
+      } else {
+        toast({
+          title: "Account Created",
+          description: "Welcome to Mix Aura!",
+        });
+      }
       
       // Redirection is handled by useEffect
 

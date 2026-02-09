@@ -18,9 +18,8 @@
  * Key Security Decisions:
  * - User Isolation: Users are strictly confined to their own document within `/users/{userId}`. They cannot
  *   read, list, or modify any other user's data. Listing the top-level `/users` collection is disallowed.
- * - Admin Role Management: Admin roles are not manageable from the client-side application. The `/roles_admin`
- *   collection must be managed manually via the Firebase Console or a trusted backend server to prevent
- *   privilege escalation. Rules only allow a user to check if they themselves are an admin.
+ * - Admin Role Management: The special email 'admin@mixaura.com' is allowed to create its own admin role document on signup.
+ *   After that, the `/roles_admin` collection is not client-manageable.
  * - Denormalization for Authorization: Portfolio items contain a denormalized `adminId` field. This allows
  *   security rules to verify admin ownership for write operations directly from the document's data,
  *   avoiding costly and complex `get` calls to other collections and ensuring rules are performant.
@@ -90,13 +89,16 @@ service cloud.firestore {
      *              from the client to prevent security vulnerabilities.
      * @path /roles_admin/{adminId}
      * @allow An admin (auth.uid='admin123') can (get) their own role document at `/roles_admin/admin123` to verify status.
-     * @deny Any user, including an admin, cannot (create), (update), or (delete) any document in this collection.
-     * @principle Prevents client-side privilege escalation. Admin roles must be managed from a trusted environment.
+     * @deny Any user, including an admin, cannot (update), or (delete) any document in this collection.
+     * @principle Prevents client-side privilege escalation.
      */
     match /roles_admin/{adminId} {
       allow get: if isOwner(adminId);
       allow list: if false;
-      allow create: if false;
+      // Allow the designated admin email to create their own role document upon first signup.
+      // This is a bootstrapping mechanism. For higher security, this could be done
+      // via the Firebase console and the rule set to 'if false;'.
+      allow create: if isOwner(adminId) && request.auth.token.email == 'admin@mixaura.com';
       allow update: if false;
       allow delete: if false;
     }

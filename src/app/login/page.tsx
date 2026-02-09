@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useAuth, useUser } from "@/firebase";
+import { useAdmin } from "@/hooks/useAdmin";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -28,6 +29,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 export default function LoginPage() {
   const auth = useAuth();
   const { user } = useUser();
+  const isAdmin = useAdmin();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -40,10 +42,14 @@ export default function LoginPage() {
   });
 
   useEffect(() => {
-    if (user) {
-      router.push("/");
+    if (user && isAdmin !== null) { // isAdmin is null while loading
+      if (isAdmin) {
+        router.push("/admin");
+      } else {
+        router.push("/");
+      }
     }
-  }, [user, router]);
+  }, [user, isAdmin, router]);
 
   const onSubmit = async (data: LoginFormValues) => {
     setIsLoading(true);
@@ -53,7 +59,7 @@ export default function LoginPage() {
         title: "Login Successful",
         description: "Welcome back!",
       });
-      router.push("/");
+      // Redirection is handled by useEffect
     } catch (error: any) {
       let description = "An unexpected error occurred. Please try again.";
       if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {

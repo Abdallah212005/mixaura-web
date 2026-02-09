@@ -9,6 +9,7 @@ import Link from "next/link";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { useAuth, useFirestore, useUser } from "@/firebase";
+import { useAdmin } from "@/hooks/useAdmin";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -30,6 +31,7 @@ export default function SignupPage() {
   const auth = useAuth();
   const firestore = useFirestore();
   const { user } = useUser();
+  const isAdmin = useAdmin();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -42,14 +44,17 @@ export default function SignupPage() {
   });
 
   useEffect(() => {
-    if (user) {
-      if (user.email?.toLowerCase() === 'admin@mixaura.com') {
-          router.push("/admin-setup");
+    if (user && isAdmin !== null) { // isAdmin is null while loading
+      if (isAdmin) {
+        router.push("/admin");
+      } else if (user.email?.toLowerCase() === 'admin@mixaura.com') {
+        // This is the special case for the first-time admin signup
+        router.push("/admin-setup");
       } else {
-          router.push("/");
+        router.push("/");
       }
     }
-  }, [user, router]);
+  }, [user, isAdmin, router]);
 
   const onSubmit = async (data: SignupFormValues) => {
     setIsLoading(true);
@@ -68,11 +73,7 @@ export default function SignupPage() {
         description: "Welcome to Mix Aura!",
       });
       
-      if (data.email.toLowerCase() === 'admin@mixaura.com') {
-        router.push("/admin-setup");
-      } else {
-        router.push("/");
-      }
+      // Redirection is handled by useEffect
 
     } catch (error: any) {
       let description = "An unexpected error occurred. Please try again.";

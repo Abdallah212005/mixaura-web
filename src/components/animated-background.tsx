@@ -99,15 +99,14 @@ export function AnimatedBackground() {
         <FloatingIcons />
         <div
           className="absolute bottom-[-10%] left-[10%] h-[35rem] w-[35rem] bg-primary/10 rounded-full blur-2xl animate-blob"
-          style={{ animationDuration: '7s' }}
         />
         <div
-          className="absolute top-[-20%] right-[10%] h-[35rem] w-[35rem] bg-accent/10 rounded-full blur-2xl animate-blob"
-          style={{ animationDelay: '2s', animationDuration: '9s' }}
+          className="absolute top-[-20%] right-[10%] h-[35rem] w-[35rem] bg-accent/10 rounded-full blur-2xl animate-blob-2"
+          style={{ animationDelay: '2s' }}
         />
         <div
-          className="absolute bottom-[5%] right-[5%] h-[30rem] w-[30rem] bg-primary/10 rounded-full blur-2xl animate-blob"
-          style={{ animationDelay: '4s', animationDuration: '5s' }}
+          className="absolute bottom-[5%] right-[5%] h-[30rem] w-[30rem] bg-primary/10 rounded-full blur-2xl animate-blob-3"
+          style={{ animationDelay: '4s' }}
         />
       </div>
     </div>

@@ -111,31 +111,34 @@ export default {
             transform: 'translate(0px, 0px) scale(1)',
           },
           '33%': {
-            transform: 'translate(80px, -90px) scale(1.2)',
+            transform: 'translate(30px, -50px) scale(1.1)',
           },
           '66%': {
-            transform: 'translate(-40px, 40px) scale(0.8)',
+            transform: 'translate(-20px, 20px) scale(0.9)',
           },
           '100%': {
             transform: 'translate(0px, 0px) scale(1)',
           },
         },
+        'blob-2': {
+          '0%': { transform: 'translate(0px, 0px) scale(1)' },
+          '33%': { transform: 'translate(-50px, 80px) scale(1.2)' },
+          '66%': { transform: 'translate(60px, -40px) scale(0.8)' },
+          '100%': { transform: 'translate(0px, 0px) scale(1)' },
+        },
+        'blob-3': {
+            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+            '33%': { transform: 'translate(80px, 30px) scale(0.9)' },
+            '66%': { transform: 'translate(-40px, -70px) scale(1.1)' },
+            '100%': { transform: 'translate(0px, 0px) scale(1)' },
+        },
         'float': {
-          '0%': {
-            transform: 'translateY(0px) rotate(0deg)',
-          },
-          '25%': {
-            transform: 'translateY(-10px) rotate(3deg)',
-          },
-          '50%': {
-            transform: 'translateY(5px) rotate(-3deg)',
-          },
-          '75%': {
-            transform: 'translateY(-5px) rotate(2deg)',
-          },
-          '100%': {
-            transform: 'translateY(0px) rotate(0deg)',
-          },
+          '0%': { transform: 'translate(0, 0) rotate(0deg)' },
+          '20%': { transform: 'translate(-10px, 15px) rotate(-5deg)' },
+          '40%': { transform: 'translate(15px, -20px) rotate(8deg)' },
+          '60%': { transform: 'translate(-5px, 25px) rotate(-3deg)' },
+          '80%': { transform: 'translate(10px, -10px) rotate(5deg)' },
+          '100%': { transform: 'translate(0, 0) rotate(0deg)' },
         },
       },
       animation: {
@@ -144,6 +147,8 @@ export default {
         'fade-in-up': 'fade-in-up 0.5s ease-out',
         'fade-in': 'fade-in 0.5s ease-out',
         'blob': 'blob 7s infinite ease-in-out',
+        'blob-2': 'blob-2 9s infinite ease-in-out',
+        'blob-3': 'blob-3 11s infinite ease-in-out',
       },
     },
   },

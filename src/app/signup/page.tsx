@@ -58,7 +58,7 @@ export default function SignupPage() {
           title: "Admin Account Created",
           description: "Welcome, Admin! Redirecting to the admin panel...",
         });
-        router.push('/dashboard'); // Go to dashboard to be routed to /admin
+        router.push('/admin');
       } else {
         toast({
           title: "Account Created",

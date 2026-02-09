@@ -120,6 +120,23 @@ export default {
             transform: 'translate(0px, 0px) scale(1)',
           },
         },
+        'float': {
+          '0%': {
+            transform: 'translateY(0px) rotate(0deg)',
+          },
+          '25%': {
+            transform: 'translateY(-10px) rotate(3deg)',
+          },
+          '50%': {
+            transform: 'translateY(5px) rotate(-3deg)',
+          },
+          '75%': {
+            transform: 'translateY(-5px) rotate(2deg)',
+          },
+          '100%': {
+            transform: 'translateY(0px) rotate(0deg)',
+          },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',

@@ -45,27 +45,25 @@ export default function SignupPage() {
       const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
       const newUser = userCredential.user;
 
-      // Create a user document in Firestore
       await setDoc(doc(firestore, "users", newUser.uid), {
         id: newUser.uid,
         email: newUser.email,
       });
 
-      // Automatically make the specific user an admin upon signup and redirect.
       if (newUser.email === 'admin@mixaura.com') {
         await setDoc(doc(firestore, "roles_admin", newUser.uid), {});
         toast({
           title: "Admin Account Created",
-          description: "Redirecting to the admin panel...",
+          description: "Welcome! Redirecting to the admin panel...",
         });
-        router.push('/admin');
       } else {
         toast({
           title: "Account Created",
           description: "Welcome to Mix Aura!",
         });
-        router.push('/');
       }
+      
+      router.push('/dashboard');
       
     } catch (error: any) {
       let description = "An unexpected error occurred. Please try again.";

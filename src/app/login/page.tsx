@@ -7,8 +7,7 @@ import * as z from "zod";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
-import { useAuth, useFirestore } from "@/firebase";
+import { useAuth } from "@/firebase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -27,7 +26,6 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const auth = useAuth();
-  const firestore = useFirestore();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -42,31 +40,14 @@ export default function LoginPage() {
   const onSubmit = async (data: LoginFormValues) => {
     setIsLoading(true);
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, data.email, data.password);
-      
-      const isAdminLogin = data.email.toLowerCase() === 'admin@mixaura.com';
-
-      if (isAdminLogin) {
-        // This is a fallback to ensure the admin role document exists,
-        // in case it wasn't created during signup.
-        try {
-          const adminDocRef = doc(firestore, "roles_admin", userCredential.user.uid);
-          await setDoc(adminDocRef, { id: userCredential.user.uid });
-        } catch (e) {
-          console.warn("Could not set admin role on login. This may be due to security rules if the document already exists, which is expected.", e);
-        }
-      }
+      await signInWithEmailAndPassword(auth, data.email, data.password);
       
       toast({
         title: "Login Successful",
         description: "Welcome back! Redirecting...",
       });
 
-      if (isAdminLogin) {
-        router.push("/admin");
-      } else {
-        router.push("/");
-      }
+      router.push("/dashboard");
 
     } catch (error: any) {
       let description = "An unexpected error occurred. Please try again.";

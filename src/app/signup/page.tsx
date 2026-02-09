@@ -51,21 +51,21 @@ export default function SignupPage() {
         email: newUser.email,
       });
 
-      // If the user is the special admin, create their role document and redirect to admin
+      // If the user is the special admin, create their role document
       if (data.email.toLowerCase() === 'admin@mixaura.com') {
         await setDoc(doc(firestore, "roles_admin", newUser.uid), { id: newUser.uid });
         toast({
           title: "Admin Account Created",
-          description: "Welcome, Admin! Redirecting to the admin panel...",
+          description: "Welcome, Admin! Redirecting...",
         });
-        router.push('/admin');
       } else {
         toast({
           title: "Account Created",
-          description: "Welcome! Please log in to continue.",
+          description: "Welcome! Redirecting...",
         });
-        router.push('/login'); // Redirect regular users to login
       }
+      
+      router.push('/dashboard');
       
     } catch (error: any) {
       let description = "An unexpected error occurred. Please try again.";

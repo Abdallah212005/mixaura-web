@@ -42,7 +42,6 @@ export default function AdminPage() {
   const storage = useStorage();
 
   const [isLoading, setIsLoading] = useState(false);
-  const [isCheckingAdmin, setIsCheckingAdmin] = useState(true);
   const [editingItem, setEditingItem] = useState<WithId<PortfolioItem> | null>(null);
   
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
@@ -95,10 +94,10 @@ export default function AdminPage() {
   const { data: portfolioItems, isLoading: isLoadingPortfolio } = useCollection<PortfolioItem>(portfolioQuery);
   
   useEffect(() => {
+    // A robust guard: if the hook resolves and the user is NOT an admin,
+    // redirect them. The `null` state means it's still loading, so we wait.
     if (isAdmin === false) {
-      router.push("/");
-    } else if (isAdmin === true) {
-      setIsCheckingAdmin(false);
+      router.replace("/");
     }
   }, [isAdmin, router]);
 
@@ -214,7 +213,8 @@ export default function AdminPage() {
     }
   };
 
-  if (isCheckingAdmin) {
+  // Show the loading skeleton while the admin status is being determined.
+  if (isAdmin === null) {
     return (
         <div className="flex flex-col min-h-screen">
             <Header />
@@ -273,6 +273,7 @@ export default function AdminPage() {
     );
   }
 
+  // If we reach this point, `isAdmin` must be `true`.
   return (
     <>
       <AnimatedBackground />

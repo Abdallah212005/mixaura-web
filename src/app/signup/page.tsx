@@ -48,15 +48,6 @@ export default function SignupPage() {
   }, [user, router]);
 
   const onSubmit = async (data: SignupFormValues) => {
-    if (data.email.toLowerCase() === 'admin@mixaura.com') {
-      toast({
-        variant: "destructive",
-        title: "Registration Error",
-        description: "This email is reserved. Please use a different email.",
-      });
-      return;
-    }
-
     setIsLoading(true);
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);

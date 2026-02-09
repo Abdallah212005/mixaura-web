@@ -6,9 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
-import { useAuth, useUser, useFirestore } from "@/firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { useAuth, useUser } from "@/firebase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -28,7 +27,6 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const auth = useAuth();
-  const firestore = useFirestore();
   const { user } = useUser();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -57,44 +55,17 @@ export default function LoginPage() {
       });
       router.push("/dashboard");
     } catch (error: any) {
-      if (error.code === 'auth/invalid-credential' && data.email.toLowerCase() === 'admin@mixaura.com' && data.password === 'mixaura#123') {
-        try {
-          const adminCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
-          const adminUser = adminCredential.user;
-          
-          const userDocRef = doc(firestore, "users", adminUser.uid);
-          const adminRoleDocRef = doc(firestore, "roles_admin", adminUser.uid);
-
-          await Promise.all([
-            setDoc(userDocRef, { id: adminUser.uid, email: adminUser.email }),
-            setDoc(adminRoleDocRef, { id: adminUser.uid })
-          ]);
-          
-          toast({
-            title: "Admin Account Created",
-            description: "Welcome, Admin! Your account has been automatically set up.",
-          });
-          router.push("/admin");
-        } catch (creationError: any) {
-          toast({
-            variant: "destructive",
-            title: "Admin Login Failed",
-            description: "The admin account may already exist with a different password.",
-          });
-        }
+      let description = "An unexpected error occurred. Please try again.";
+      if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+        description = "Invalid email or password. Please check your credentials and try again.";
       } else {
-        let description = "An unexpected error occurred. Please try again.";
-        if (error.code === 'auth/invalid-credential') {
-          description = "Invalid email or password. Please check your credentials and try again.";
-        } else {
-          description = error.message || description;
-        }
-        toast({
-          variant: "destructive",
-          title: "Login Failed",
-          description: description,
-        });
+        description = error.message || description;
       }
+      toast({
+        variant: "destructive",
+        title: "Login Failed",
+        description: description,
+      });
     } finally {
       setIsLoading(false);
     }

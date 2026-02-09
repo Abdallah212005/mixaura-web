@@ -50,15 +50,17 @@ export default function Home() {
           <div className="flex flex-col items-center justify-center text-center space-y-12">
             <Hero />
             {!showPortfolio && (
-              <Button onClick={handleShowPortfolio} size="lg" className="btn-animated bg-accent hover:bg-accent/90 text-accent-foreground rounded-full px-8 py-6 text-base">
-                <Eye className="mr-2 h-5 w-5" />
-                Our Portfolio
-              </Button>
+              <div className="animate-fade-in-up" style={{ animationDelay: '0.4s', animationFillMode: 'backwards' }}>
+                <Button onClick={handleShowPortfolio} size="lg" className="btn-animated bg-accent hover:bg-accent/90 text-accent-foreground rounded-full px-8 py-6 text-base">
+                  <Eye className="mr-2 h-5 w-5" />
+                  Our Portfolio
+                </Button>
+              </div>
             )}
           </div>
           
           {showPortfolio && (
-             <div className="mt-16 md:mt-24">
+             <div className="mt-16 md:mt-24 animate-fade-in">
                <Separator className="my-8 bg-border/20" />
                <h2 className="text-3xl font-bold tracking-tighter text-center mb-12 bg-clip-text text-transparent bg-gradient-to-r from-white to-white/70">
                 Our AI-Powered Work

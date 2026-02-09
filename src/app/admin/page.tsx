@@ -6,8 +6,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { addDoc, collection } from "firebase/firestore";
-import { useAuth, useFirestore } from "@/firebase";
-import { useAdmin } from "@/hooks/useAdmin";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { useAuth, useFirestore, useAdmin, useStorage } from "@/firebase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -22,7 +22,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 const portfolioSchema = z.object({
   title: z.string().min(1, "Title is required."),
   description: z.string().min(1, "Description is required."),
-  imageUrl: z.string().url("Must be a valid URL."),
+  imageFile: z
+    .custom<FileList>()
+    .refine((files) => files?.length > 0, "Image is required.")
+    .refine((files) => files?.[0]?.type.startsWith("image/"), "Must be an image file."),
   imageHint: z.string().min(1, "Image hint is required."),
 });
 
@@ -33,11 +36,17 @@ export default function AdminPage() {
   const isAdmin = useAdmin();
   const auth = useAuth();
   const firestore = useFirestore();
+  const storage = useStorage();
   const [isLoading, setIsLoading] = useState(false);
   const [isCheckingAdmin, setIsCheckingAdmin] = useState(true);
 
   const form = useForm<PortfolioFormValues>({
     resolver: zodResolver(portfolioSchema),
+    defaultValues: {
+      title: "",
+      description: "",
+      imageHint: "",
+    },
   });
 
   useEffect(() => {
@@ -56,15 +65,24 @@ export default function AdminPage() {
     }
     setIsLoading(true);
     try {
+        const imageFile = data.imageFile[0];
+        const storageRef = ref(storage, `portfolio-images/${Date.now()}_${imageFile.name}`);
+
+        const uploadTask = await uploadBytes(storageRef, imageFile);
+        const imageUrl = await getDownloadURL(uploadTask.ref);
+
         await addDoc(collection(firestore, "portfolioItems"), {
-            ...data,
+            title: data.title,
+            description: data.description,
+            imageUrl: imageUrl,
+            imageHint: data.imageHint,
             adminId: auth.currentUser.uid,
         });
         toast({
             title: "Portfolio Item Added",
             description: `${data.title} has been added to the portfolio.`,
         });
-        form.reset({ title: "", description: "", imageUrl: "", imageHint: "" });
+        form.reset();
     } catch (error: any) {
         console.error("Error adding portfolio item:", error);
         toast({
@@ -154,12 +172,19 @@ export default function AdminPage() {
                   />
                   <FormField
                     control={form.control}
-                    name="imageUrl"
-                    render={({ field }) => (
+                    name="imageFile"
+                    render={({ field: { onChange, onBlur, name, ref } }) => (
                       <FormItem>
-                        <FormLabel>Image URL</FormLabel>
+                        <FormLabel>Image</FormLabel>
                         <FormControl>
-                          <Input placeholder="https://example.com/image.png" {...field} />
+                          <Input
+                            type="file"
+                            accept="image/*"
+                            onBlur={onBlur}
+                            name={name}
+                            ref={ref}
+                            onChange={(e) => onChange(e.target.files)}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

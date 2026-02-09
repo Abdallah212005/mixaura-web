@@ -1,0 +1,140 @@
+{
+  "entities": {
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user of the Mix Aura Digital website.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the User entity."
+        },
+        "email": {
+          "type": "string",
+          "description": "Email address of the user.",
+          "format": "email"
+        }
+      },
+      "required": [
+        "id",
+        "email"
+      ]
+    },
+    "Admin": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Admin",
+      "type": "object",
+      "description": "Represents an administrator of the Mix Aura Digital website.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Admin entity."
+        },
+        "username": {
+          "type": "string",
+          "description": "Username of the administrator."
+        }
+      },
+      "required": [
+        "id",
+        "username"
+      ]
+    },
+    "PortfolioItem": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "PortfolioItem",
+      "type": "object",
+      "description": "Represents a portfolio item showcased on the Mix Aura Digital website.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the PortfolioItem entity."
+        },
+        "title": {
+          "type": "string",
+          "description": "Title of the portfolio item."
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of the portfolio item."
+        },
+        "imageUrl": {
+          "type": "string",
+          "description": "URL of the image representing the portfolio item.",
+          "format": "uri"
+        },
+        "adminId": {
+          "type": "string",
+          "description": "Reference to Admin who added the portfolio item. (Relationship: Admin 1:N PortfolioItem)"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "description",
+        "imageUrl",
+        "adminId"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Stores user data. Path-based ownership for user data.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/roles_admin/{adminId}",
+        "definition": {
+          "entityName": "Admin",
+          "schema": {
+            "$ref": "#/backend/entities/Admin"
+          },
+          "description": "Collection indicating admin status. Existence of document grants admin privileges.",
+          "params": [
+            {
+              "name": "adminId",
+              "description": "The unique identifier of the admin."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/portfolioItems/{portfolioItemId}",
+        "definition": {
+          "entityName": "PortfolioItem",
+          "schema": {
+            "$ref": "#/backend/entities/PortfolioItem"
+          },
+          "description": "Stores portfolio items, with 'adminId' indicating the creating admin. Includes denormalized 'adminId' for authorization independence.",
+          "params": [
+            {
+              "name": "portfolioItemId",
+              "description": "The unique identifier of the portfolio item."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "This Firestore data structure is designed to support the Mix Aura Digital website, focusing on user authentication, admin roles, and portfolio management. It leverages structural segregation and denormalization for authorization independence, which is crucial for security and scalability.  \n\nUsers are stored in the `/users/{userId}` collection, enabling straightforward path-based ownership rules. Admins are managed via the `/roles_admin/{adminId}` collection; the *existence* of a document in this collection grants admin privileges. Portfolio items are stored in the `/portfolioItems` collection, with each document containing the `adminId` of the admin who created it. This ensures that only admins can create and modify portfolio items. The use of the `adminId` field in the `/portfolioItems` collection denormalizes the authorization context, eliminating the need for `get()` calls in security rules and allowing for atomic operations. This approach ensures authorization independence and simplifies security rules, enabling secure `list` operations (QAPs)."
+  }
+}

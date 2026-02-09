@@ -1,0 +1,111 @@
+/**
+ * This ruleset enforces a security model for the Mix Aura Digital website.
+ *
+ * Core Philosophy:
+ * The security model is built on three pillars: user self-management, privileged admin roles,
+ * and public content administration. Regular users can create and manage their own profile data.
+ * A separate, restricted collection `/roles_admin` is used to grant administrative privileges.
+ * Publicly visible content, like portfolio items, can be read by anyone but can only be
+ * created or modified by users designated as administrators.
+ *
+ * Data Structure:
+ * - /users/{userId}: Stores private data for each user. Access is strictly limited to the document owner.
+ * - /roles_admin/{adminId}: A role-gating collection. The existence of a document here with a user's UID
+ *   as the ID grants them system-wide admin privileges. This collection is read-only from the client.
+ * - /portfolioItems/{portfolioItemId}: A public collection of portfolio items. These are readable by anyone
+ *   but writable only by administrators.
+ *
+ * Key Security Decisions:
+ * - User Isolation: Users are strictly confined to their own document within `/users/{userId}`. They cannot
+ *   read, list, or modify any other user's data. Listing the top-level `/users` collection is disallowed.
+ * - Admin Role Management: Admin roles are not manageable from the client-side application. The `/roles_admin`
+ *   collection must be managed manually via the Firebase Console or a trusted backend server to prevent
+ *   privilege escalation. Rules only allow a user to check if they themselves are an admin.
+ * - Denormalization for Authorization: Portfolio items contain a denormalized `adminId` field. This allows
+ *   security rules to verify admin ownership for write operations directly from the document's data,
+ *   avoiding costly and complex `get` calls to other collections and ensuring rules are performant.
+ * - Default Deny: All paths not explicitly matched are denied access by default.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ------------------------------------------------------------------------
+    // Helper Functions
+    // ------------------------------------------------------------------------
+
+    /**
+     * Checks if the user is authenticated.
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /**
+     * Checks if the currently authenticated user's UID matches the provided userId.
+     * This is the foundation for user-specific document ownership.
+     */
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    /**
+     * Checks if the requesting user has admin privileges.
+     * Admin status is granted by the existence of a document in the /roles_admin
+     * collection where the document ID is the user's UID. This costs one read.
+     */
+    function isAdmin() {
+      return isSignedIn() && exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
+    }
+
+    // ------------------------------------------------------------------------
+    // Collection Rules
+    // ------------------------------------------------------------------------
+
+    /**
+     * @description Manages individual user profile documents.
+     * @path /users/{userId}
+     * @allow A logged-in user (auth.uid='user123') can (create) their own document at `/users/user123`.
+     * @deny A logged-in user (auth.uid='user123') cannot (get) another user's document at `/users/user456`.
+     * @principle Restricts access to a user's own data tree and enforces self-creation.
+     */
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow list: if false;
+      allow create: if isOwner(userId) && request.resource.data.id == userId;
+      allow update: if isOwner(userId) && resource != null && request.resource.data.id == resource.data.id;
+      allow delete: if isOwner(userId) && resource != null;
+    }
+
+    /**
+     * @description Controls access to the admin role-gating collection. This collection is read-only
+     *              from the client to prevent security vulnerabilities.
+     * @path /roles_admin/{adminId}
+     * @allow An admin (auth.uid='admin123') can (get) their own role document at `/roles_admin/admin123` to verify status.
+     * @deny Any user, including an admin, cannot (create), (update), or (delete) any document in this collection.
+     * @principle Prevents client-side privilege escalation. Admin roles must be managed from a trusted environment.
+     */
+    match /roles_admin/{adminId} {
+      allow get: if isOwner(adminId);
+      allow list: if false;
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
+    }
+
+    /**
+     * @description Manages public portfolio items. Readable by anyone, but writable only by admins.
+     * @path /portfolioItems/{portfolioItemId}
+     * @allow An admin user can (create) a new portfolio item and correctly set the `adminId`.
+     * @deny A regular, non-admin user cannot (create) or (delete) any portfolio items.
+     * @principle Implements a "Public Read, Admin-Only Write" pattern using denormalized ownership.
+     */
+    match /portfolioItems/{portfolioItemId} {
+      allow get: if true;
+      allow list: if true;
+      allow create: if isAdmin() && request.resource.data.adminId == request.auth.uid;
+      allow update: if isAdmin() && resource != null && resource.data.adminId == request.auth.uid && request.resource.data.adminId == resource.data.adminId;
+      allow delete: if isAdmin() && resource != null && resource.data.adminId == request.auth.uid;
+    }
+  }
+}

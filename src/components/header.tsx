@@ -35,8 +35,8 @@ export function Header() {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 p-4 md:p-6 z-10 backdrop-blur-sm bg-background/30 animate-fade-in" style={{ animationDuration: '1s' }}>
-      <div className="container mx-auto flex justify-between items-center">
+    <header className="fixed top-0 left-0 right-0 z-10 backdrop-blur-sm bg-background/30 animate-fade-in" style={{ animationDuration: '1s' }}>
+      <div className="container mx-auto flex justify-between items-center px-4 py-4">
         <Logo />
         <div className="flex items-center gap-4">
           {isUserLoading ? (

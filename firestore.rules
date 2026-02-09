@@ -57,6 +57,14 @@ service cloud.firestore {
     function isAdmin() {
       return isSignedIn() && exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
     }
+    
+    function isPortfolioItemDataValid(data) {
+      return data.title is string && data.title.size() > 0
+          && data.description is string && data.description.size() > 0
+          && data.imageUrl is string && data.imageUrl.matches('https?://.+')
+          && data.imageHint is string && data.imageHint.size() > 0
+          && data.adminId is string && data.adminId.size() > 0;
+    }
 
     // ------------------------------------------------------------------------
     // Collection Rules
@@ -73,8 +81,8 @@ service cloud.firestore {
       allow get: if isOwner(userId);
       allow list: if false;
       allow create: if isOwner(userId) && request.resource.data.id == userId;
-      allow update: if isOwner(userId) && resource != null && request.resource.data.id == resource.data.id;
-      allow delete: if isOwner(userId) && resource != null;
+      allow update: if isOwner(userId) && request.resource.data.id == resource.data.id;
+      allow delete: if isOwner(userId);
     }
 
     /**
@@ -103,9 +111,13 @@ service cloud.firestore {
     match /portfolioItems/{portfolioItemId} {
       allow get: if true;
       allow list: if true;
-      allow create: if isAdmin() && request.resource.data.adminId == request.auth.uid;
-      allow update: if isAdmin() && resource != null && resource.data.adminId == request.auth.uid && request.resource.data.adminId == resource.data.adminId;
-      allow delete: if isAdmin() && resource != null && resource.data.adminId == request.auth.uid;
+      allow create: if isAdmin() 
+                    && request.resource.data.adminId == request.auth.uid
+                    && isPortfolioItemDataValid(request.resource.data);
+      allow update: if isAdmin() 
+                    && resource.data.adminId == request.auth.uid
+                    && isPortfolioItemDataValid(request.resource.data);
+      allow delete: if isAdmin() && resource.data.adminId == request.auth.uid;
     }
   }
 }

@@ -95,7 +95,7 @@ export default function AdminPage() {
   
   useEffect(() => {
     if (isAdmin === false) {
-      router.push("/dashboard");
+      router.push("/");
     } else if (isAdmin === true) {
       setIsCheckingAdmin(false);
     }

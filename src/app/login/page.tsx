@@ -41,7 +41,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (user) {
-      router.push("/dashboard");
+      router.push("/");
     }
   }, [user, router]);
 
@@ -53,7 +53,7 @@ export default function LoginPage() {
         title: "Login Successful",
         description: "Welcome back!",
       });
-      router.push("/dashboard");
+      router.push("/");
     } catch (error: any) {
       let description = "An unexpected error occurred. Please try again.";
       if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {

@@ -43,7 +43,7 @@ export default function SignupPage() {
 
   useEffect(() => {
     if (user) {
-      router.push("/dashboard");
+      router.push("/");
     }
   }, [user, router]);
 
@@ -63,7 +63,7 @@ export default function SignupPage() {
         title: "Account Created",
         description: "Welcome to Mix Aura!",
       });
-      router.push("/dashboard");
+      router.push("/");
     } catch (error: any) {
       let description = "An unexpected error occurred. Please try again.";
       if (error.code === 'auth/email-already-in-use') {

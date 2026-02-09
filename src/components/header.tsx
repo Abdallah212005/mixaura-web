@@ -6,7 +6,7 @@ import { useAuth, useUser } from "@/firebase";
 import { useAdmin } from "@/hooks/useAdmin";
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
-import { LogIn, LogOut, User as UserIcon, Crown } from "lucide-react";
+import { LogIn, LogOut, Crown } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -61,21 +61,17 @@ export function Header() {
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link href="/dashboard">
-                    <UserIcon className="mr-2 h-4 w-4" />
-                    <span>Dashboard</span>
-                  </Link>
-                </DropdownMenuItem>
-                {isAdmin && (
-                  <DropdownMenuItem asChild>
-                    <Link href="/admin">
-                      <Crown className="mr-2 h-4 w-4" />
-                      <span>Admin Panel</span>
-                    </Link>
-                  </DropdownMenuItem>
-                )}
-                <DropdownMenuSeparator />
+                {isAdmin ? (
+                  <>
+                    <DropdownMenuItem asChild>
+                      <Link href="/admin">
+                        <Crown className="mr-2 h-4 w-4" />
+                        <span>Admin Panel</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                  </>
+                ) : null}
                 <DropdownMenuItem onClick={handleLogout}>
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Log out</span>

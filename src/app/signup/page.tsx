@@ -45,17 +45,27 @@ export default function SignupPage() {
       const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
       const newUser = userCredential.user;
 
+      // Create user document in /users collection
       await setDoc(doc(firestore, "users", newUser.uid), {
         id: newUser.uid,
         email: newUser.email,
       });
 
-      toast({
-        title: "Account Created",
-        description: "Welcome! You can now log in.",
-      });
-      
-      router.push('/login');
+      // If the user is the special admin, create their role document and redirect to admin
+      if (data.email.toLowerCase() === 'admin@mixaura.com') {
+        await setDoc(doc(firestore, "roles_admin", newUser.uid), { id: newUser.uid });
+        toast({
+          title: "Admin Account Created",
+          description: "Welcome, Admin! Redirecting to the admin panel...",
+        });
+        router.push('/dashboard'); // Go to dashboard to be routed to /admin
+      } else {
+        toast({
+          title: "Account Created",
+          description: "Welcome! Please log in to continue.",
+        });
+        router.push('/login'); // Redirect regular users to login
+      }
       
     } catch (error: any) {
       let description = "An unexpected error occurred. Please try again.";

@@ -17,15 +17,16 @@ export default function DashboardPage() {
   useEffect(() => {
     // Wait until we have definitive user and admin status
     if (isUserLoading || isAdmin === null) {
-      return; // Still loading, do nothing
+      return; // Still loading, do nothing. The page shows a loading skeleton.
     }
 
     if (!user) {
-      // If for some reason user is not logged in, go to login
+      // If user is not logged in for any reason, send to login page.
       router.replace("/login");
       return;
     }
     
+    // We have a logged in user, now check for admin status
     if (isAdmin) {
       router.replace("/admin");
     } else {

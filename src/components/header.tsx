@@ -4,7 +4,6 @@ import Link from "next/link";
 import { signOut } from "firebase/auth";
 import { useAuth, useUser } from "@/firebase";
 import { useAdmin } from "@/hooks/useAdmin";
-import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import { LogIn, LogOut, Crown } from "lucide-react";
 import {
@@ -36,8 +35,7 @@ export function Header() {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-10 backdrop-blur-sm bg-background/30 animate-fade-in" style={{ animationDuration: '1s' }}>
-      <div className="container mx-auto flex justify-between items-center px-4 py-4">
-        <Logo />
+      <div className="container mx-auto flex justify-end items-center px-4 py-4">
         <div className="flex items-center gap-4">
           {isUserLoading ? (
             <div className="h-10 w-24 rounded-md animate-pulse bg-muted"></div>

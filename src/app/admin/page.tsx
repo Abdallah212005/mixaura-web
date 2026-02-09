@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -47,6 +47,7 @@ export default function AdminPage() {
   
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<WithId<PortfolioItem> | null>(null);
+  const editFormRef = useRef<HTMLDivElement>(null);
   
   const portfolioSchema = z.object({
     title: z.string().min(1, "Title is required."),
@@ -109,7 +110,7 @@ export default function AdminPage() {
       imageHint: item.imageHint,
       imageFile: undefined,
     });
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    editFormRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   const cancelEdit = () => {
@@ -356,7 +357,7 @@ export default function AdminPage() {
               </CardContent>
             </Card>
 
-            <Card className="lg:col-span-2 sticky top-24">
+            <Card ref={editFormRef} className="lg:col-span-2 sticky top-24">
               <CardHeader>
                 <CardTitle>{editingItem ? "Edit Portfolio Item" : "Add New Item"}</CardTitle>
                 <CardDescription>{editingItem ? "Update the details for this item." : "Fill out the form to add a new project."}</CardDescription>

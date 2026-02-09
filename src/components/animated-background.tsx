@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 // A collection of icons as SVG components
 const icons = [
@@ -44,35 +44,51 @@ const icons = [
   )
 ];
 
+type FloatingIconData = {
+    Icon: React.FC<React.SVGProps<SVGSVGElement>>;
+    animationStyle: React.CSSProperties;
+    scaleStyle: React.CSSProperties;
+};
+
 const FloatingIcons = () => {
-    const floatingIcons = Array.from({ length: 15 }).map((_, i) => {
-        const Icon = icons[i % icons.length];
-        const scale = Math.random() * 0.4 + 0.3; // scale from 0.3 to 0.7
-        
-        const animationStyle: React.CSSProperties = {
-            left: `${Math.random() * 100}%`,
-            top: `${Math.random() * 100}%`,
-            animationName: 'float',
-            animationDuration: `${Math.random() * 20 + 15}s`, // 15-35s
-            animationDelay: `-${Math.random() * 35}s`, // Start at a random point
-            animationTimingFunction: 'ease-in-out',
-            animationIterationCount: 'infinite',
-        };
-        
-        const scaleStyle: React.CSSProperties = {
-            transform: `scale(${scale})`
-        };
+    const [iconData, setIconData] = useState<FloatingIconData[]>([]);
 
-        return (
-            <div key={i} className="absolute text-foreground/10" style={animationStyle}>
-                 <div style={scaleStyle}>
-                    <Icon className="h-14 w-14" />
-                 </div>
-            </div>
-        )
-    });
+    useEffect(() => {
+        const generatedIcons = Array.from({ length: 15 }).map((_, i) => {
+            const Icon = icons[i % icons.length];
+            const scale = Math.random() * 0.4 + 0.3; // scale from 0.3 to 0.7
+            
+            const animationStyle: React.CSSProperties = {
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                animationName: 'float',
+                animationDuration: `${Math.random() * 20 + 15}s`, // 15-35s
+                animationDelay: `-${Math.random() * 35}s`, // Start at a random point
+                animationTimingFunction: 'ease-in-out',
+                animationIterationCount: 'infinite',
+            };
+            
+            const scaleStyle: React.CSSProperties = {
+                transform: `scale(${scale})`
+            };
+            return { Icon, animationStyle, scaleStyle };
+        });
+        setIconData(generatedIcons);
+    }, []); // Empty dependency array ensures this runs once on mount
 
-    return <>{floatingIcons}</>;
+    if (!iconData.length) return null; // Render nothing on server and initial client render
+
+    return (
+        <>
+            {iconData.map(({ Icon, animationStyle, scaleStyle }, i) => (
+                 <div key={i} className="absolute text-foreground/10" style={animationStyle}>
+                    <div style={scaleStyle}>
+                        <Icon className="h-14 w-14" />
+                    </div>
+                </div>
+            ))}
+        </>
+    );
 };
 
 

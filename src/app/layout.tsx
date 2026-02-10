@@ -10,10 +10,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Mix Aura | Marketing & Development",
     description: "A marketing agency and development team dedicated to building brands that make an impact. Start like a pro.",
+    url: 'https://abdallah212005.github.io/mixaura-web/',
     siteName: 'Mix Aura',
     images: [
       {
-        url: 'https://picsum.photos/seed/mixaura-v2/1200/630',
+        url: 'https://picsum.photos/seed/mixaura-v3/1200/630',
         width: 1200,
         height: 630,
         alt: 'Mix Aura Digital Agency',
@@ -26,7 +27,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: "Mix Aura | Marketing & Development",
     description: "A marketing agency and development team dedicated to building brands that make an impact. Start like a pro.",
-    images: ['https://picsum.photos/seed/mixaura-v2/1200/630'],
+    images: ['https://picsum.photos/seed/mixaura-v3/1200/630'],
   },
 };
 

@@ -1,6 +1,6 @@
 # Mix Aura Digital
 
-[**Visit the live website &rarr;**](https://[YOUR-LIVE-WEBSITE-URL-HERE])
+[**Visit the live website &rarr;**](https://abdallah212005.github.io/mixaura-web/)
 
 ---
 
